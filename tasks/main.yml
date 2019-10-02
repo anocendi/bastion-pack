@@ -1,0 +1,38 @@
+- name: "Update repositories cache"
+  apt:
+    force_apt_get: yes
+    update_cache: yes
+
+- name: "Upgrade packages to the latest version"
+  apt:
+    force_apt_get: yes
+    upgrade: dist
+
+- name: "Install required packages"
+  apt:
+    name: "{{ packages }}"
+    force_apt_get: yes
+    state: latest
+  vars:
+    packages:
+      - apt-transport-https
+      - ca-certificates
+      - software-properties-common
+
+- name: "Install required packages (Ubuntu only)"
+  apt:
+    name: "{{ packages }}"
+    force_apt_get: yes
+    state: latest
+  vars:
+    packages:
+      - linux-aws
+  when: ansible_distribution == 'Ubuntu'
+
+- name: "Create hard core limit file"
+  file:
+    path: /etc/security/limits.d/10.hardcore.conf
+    mode: '0644'
+    state: touch
+    owner: root
+    group: root
